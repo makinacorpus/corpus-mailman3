@@ -13,6 +13,8 @@ import sys
 from mailmanclient import Client
 from urllib.error import HTTPError
 
+from collections import OrderedDict
+
 
 class ProcessError(IOError):
     pass
@@ -60,7 +62,7 @@ domain = os.environ['lists_domain']  # lists.foo.com
 api_user = os.environ['api_user']  # restadmin
 api_pass = os.environ['api_pass']  # secret_password
 
-lists = {}
+lists = OrderedDict()
 with open('import.csv', 'r') as csvfile:
     spamreader = csv.reader(csvfile, delimiter=';', quotechar='"')
     for row in spamreader:
@@ -85,6 +87,21 @@ except (HTTPError,) as exc:
     if exc.code != 404:
         raise
     dom = client.create_domain(domain)
+
+
+def accept_request(ml, member):
+    done = None
+    for request in ml.requests:
+        if request['email'] != member:
+            continue
+        if member not in [m.email for m in ml.members]:
+            ml.accept_request(request['token'])
+        else:
+            ml.discard_request(request['token'])
+        done = True
+    return done
+
+
 for mailing, actions in six.iteritems(lists):
     for action, members in six.iteritems(actions):
         if not members:
@@ -98,23 +115,20 @@ for mailing, actions in six.iteritems(lists):
                 raise
             ml = dom.create_list(mailing)
         for member in members:
-            try:
-                if action == 'add':
-                    print("  + {0}".format(member))
-                    ml.subscribe(member)
-                elif action == 'delete':
-                    print("  - {0}".format(member))
-                    ml.unsubscribe(member)
-            except (HTTPError,) as exc:
-                if exc.code == 409:
-                    pass
-                else:
-                    raise
             if action == 'add':
-                for request in ml.requests:
-                    if request['email'] != member:
-                        continue
-                    ml.accept_request(request['token'])
+                print("  + {0}".format(member))
+                accepted = accept_request(ml, member)
+                if accepted:
+                    continue
+                elif member in [m.email for m in ml.members]:
+                    print("    already in!")
+                    continue
+                else:
+                    ml.subscribe(member)
+            elif action == 'delete':
+                print("  - {0}".format(member))
+                ml.unsubscribe(member)
+            accept_request(ml, member)
 
 if os.path.exists('../data/update_postfix.sh'):
     cmdrun('../data/update_postfix.sh')
