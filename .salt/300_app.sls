@@ -13,7 +13,7 @@ include:
             if ! systemctl show {{data.service_name}};then exit 0;fi
             service {{data.service_name}} stop
     - watch_in:
-      - mc_proxy: mailman3-configs-after
+      - mc_proxy: {{cfg.name}}-configs-after
       - cmd: {{cfg.name}}-start-all
 
 postupdate-{{cfg.name}}-cron:
