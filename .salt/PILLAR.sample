@@ -42,6 +42,7 @@
 
 makina-projects.projectname:
   data:
+    db_url: "postgres://mailman3:xxx@pgsql.x.net:5432/mailman3"
     lists_domain: lists.foo.net
     default_language: fr
     site_owner: "root@{fqdn}"
