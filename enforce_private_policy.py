@@ -6,6 +6,8 @@ from __future__ import print_function
 from mailman.interfaces.mailinglist import SubscriptionPolicy
 from mailman.interfaces.action import Action
 from mailman.interfaces.mailinglist import ReplyToMunging
+from mailman.interfaces.archiver import ArchivePolicy
+
 from mailman.config import config  
 
 def enforce(mailing):
@@ -16,6 +18,7 @@ def enforce(mailing):
     mailing.default_nonmember_action = Action.discard
     mailing.reply_goes_to_list = ReplyToMunging.point_to_list
     mailing.first_strip_reply_to = True
+    mailing.archive_policy = ArchivePolicy.private
     config.db.commit()
 
 
