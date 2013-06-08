@@ -112,7 +112,7 @@ makina-projects.projectname:
     rest_api_user: 'restadmin'
     rest_api_pass: '{{salt['mc_utils.generate_stored_password'](
                            'corpus-django_web_secret_keyAPI', 64)}}'
-    hyperkitty_url: 'http://localhost:8000/'
+    hyperkitty_url: 'http://localhost:8000/hyperkitty/'
     hyperkitty_key: '{{salt['mc_utils.generate_stored_password'](
                              'corpus-django_web_secret_keyARCHIVER', 64)}}'
   env_defaults:
