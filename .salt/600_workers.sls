@@ -3,7 +3,7 @@
 {% set data = cfg.data %}
 
 include:
-  - makina-projects.{{cfg.name}}.include.configs 
+  - makina-projects.{{cfg.name}}.include.configs
 
 {{cfg.name}}-services:
   cmd.run:

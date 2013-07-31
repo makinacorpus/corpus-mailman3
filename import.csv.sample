@@ -1,0 +1,9 @@
+
+foo;add;mpa+1@makina-corpus.com
+bar;add;mpa+a@makina-corpus.com
+foo;add;mpa+2@makina-corpus.com
+bar;add;mpa+b@makina-corpus.com
+foo;add;mpa+3@makina-corpus.com
+foo;delete;mpa+2@makina-corpus.com
+bar;delete;mpa+b@makina-corpus.com
+foo;delete;mpa+3@makina-corpus.com

@@ -42,6 +42,7 @@
 
 makina-projects.projectname:
   data:
+    lists_domain: lists.foo.net
     default_language: fr
     site_owner: "root@{fqdn}"
     var_dir: "{data_root}/var"
@@ -79,13 +80,14 @@ makina-projects.projectname:
         mode: 640
     htaccess: "/etc/{name}.webaccess"
     doc_root: "{data_root}/www"
-    orig_py: /usr/bin/python3
+    orig_py: /usr/bin/python3.4
     py: "{py_root}/bin/python"
     py_root: "{project_root}/venv"
     domain: "{fqdn}"
     requirements: "{project_root}/requirements/prod.txt"
     server_aliases: []
     force_ssl: true
+    enforce_private_policy: true
     #disabled_urls []
     #ldap_url: "ldap://ldap.net/dc=m,dc=com?uid?sub?(objectClass=person)"
     #ldap_binddn: "uid=f,dc=e,dc=e"
