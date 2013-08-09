@@ -1,0 +1,30 @@
+{% set cfg = salt['mc_project.get_configuration'](project) %}
+{% set data = cfg.data %}
+#
+#It's not recommended to modify this file in-place, because it will be
+# overwritten during package upgrades.  If you want to customize, the
+# best way is to create a file "/etc/systemd/system/mailman3.service",
+# containing
+#       .include /usr/lib/systemd/system/mailman3.service
+#       ...make your changes here...
+# For more info about custom unit files, see
+# http://fedoraproject.org/wiki/Systemd#How_do_I_customize_a_unit_file.2F_add_a_custom_unit_file.3F
+
+
+[Unit]
+Description=GNU Mailing List Manager
+After=syslog.target network.target
+
+[Service]
+Type=forking
+PIDFile={{data.app_root}}/var/master.pid
+User={{cfg.user}}
+Group={{cfg.group}}
+ExecStart={{data.app_root}}/venv/bin/mailman   -C "{{data.app_root}}/mailman.cfg" start --force
+ExecStop="{{data.app_root}}/mailman_stop.sh"
+ExecReload="{{data.app_root}}/mailman_stop.sh"
+ExecReload={{data.app_root}}/venv/bin/mailman  -C "{{data.app_root}}/mailman.cfg" start
+WorkingDirectory={{data.app_root}}
+
+[Install]
+WantedBy=multi-user.target

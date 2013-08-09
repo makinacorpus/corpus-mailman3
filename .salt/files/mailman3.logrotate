@@ -1,0 +1,10 @@
+#{% set cfg = salt['mc_project.get_configuration'](project) %}
+#{% set data = cfg.data %} 
+{{data.app_root}}/var/logs/*.log {
+    missingok
+    sharedscripts
+    su {{cfg.user}} {{cfg.group}}
+    postrotate
+        /bin/kill -HUP `cat {{data.app_root}}/var/master.pid 2>/dev/null` 2>/dev/null || true
+    endscript
+} 

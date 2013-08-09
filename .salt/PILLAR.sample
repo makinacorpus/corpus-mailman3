@@ -1,0 +1,120 @@
+#
+# This file contains default values which are used
+# by the salt states deploying your project.
+# you may copy them to your relevant PILLAR file
+# before editing them.
+# If you need to add variables, this is where to begin.
+# Please keep defaults in there, but real passwords
+# must be putted inside pillar
+#
+# replace project_name in your pillar by
+# the current projectname
+# you can also merge parts of this file
+# with the relevant pillar
+
+{#
+   ALSO: copy & edit this to your pillar file to configure postfix
+#}
+{#
+{% set mail ='makina-states.services.mail.postfix' %}
+{{mail}}.inet_interfaces: [all]
+{{mail}}.mydestination:
+    "lists.foo.com": "OK"
+    "lists.foo.net": "OK"
+{{mail}}.transport_maps_param: >
+     hash:/srv/projects/mailman/project/bundler/var/data/postfix_lmtp,
+     hash:/etc/postfix/transport,
+     hash:/etc/postfix/transport.local
+{{mail}}.local_recipient_maps_param: |
+     hash:/srv/projects/mailman/project/bundler/var/data/postfix_lmtp
+{{mail}}.relay_domains_param: >
+     hash:/srv/projects/mailman/project/bundler/var/data/postfix_domains,
+     hash:/etc/postfix/relay_domains,
+     hash:/etc/postfix/relay_domains.local
+{{mail}}.owner_request_special: 'no'
+
+#}
+
+
+{# also think to restrict the smtp traffic via iptables,
+   in makina-states, via ms_iptables, or via the provider loadbalancer,
+   redirect only the wanted smtp traffic #}
+
+makina-projects.projectname:
+  data:
+    default_language: fr
+    site_owner: "root@{fqdn}"
+    var_dir: "{data_root}/var"
+    spool: "{var_dir}/spool"
+    PROJECT: mailman
+    fixperms_cron_periodicity: "0 */2 * * *"
+    app_root: "{project_root}"
+    locale_cwd: "{app_root}"
+    service_name: "{name}-mailman3"
+    host: 127.0.0.1
+    port: 8001
+    configs:
+
+      {% for i in ['mailman.cfg', 'mailman-hyperkitty.cfg'] %}
+      "{{i}}":
+        source: "salt://makina-projects/{name}/files/{{i}}"
+        target: "{app_root}/{{i}}"
+        mode: 640
+      {%endfor%}
+      stopper:
+        target: "{app_root}/mailman_stop.sh"
+        source: "salt://makina-projects/{name}/files/mailman_stop.sh"
+        mode: 750
+      logrotate:
+        target: "/etc/logrotate.d/{service_name}"
+        source: "salt://makina-projects/{name}/files/mailman3.logrotate"
+        mode: 640
+        user: root
+        group: root
+      service:
+        target: "/etc/systemd/system/{service_name}.service"
+        source: "salt://makina-projects/{name}/files/mailman3.service"
+        user: root
+        group: root
+        mode: 640
+    htaccess: "/etc/{name}.webaccess"
+    doc_root: "{data_root}/www"
+    orig_py: /usr/bin/python3
+    py: "{py_root}/bin/python"
+    py_root: "{project_root}/venv"
+    domain: "{fqdn}"
+    requirements: "{project_root}/requirements/prod.txt"
+    server_aliases: []
+    force_ssl: true
+    #disabled_urls []
+    #ldap_url: "ldap://ldap.net/dc=m,dc=com?uid?sub?(objectClass=person)"
+    #ldap_binddn: "uid=f,dc=e,dc=e"
+    #ldap_binddn_passwd: "foo"
+    postfix: true
+    nginx_loglevel: "crit"
+    nginx_upstreams: salt://makina-projects/{name}/files/nginx.upstreams.conf
+    nginx_vhost: salt://makina-projects/{name}/files/nginx.content.conf
+    adminmail: "root@{domain}"
+    create_admins: true
+    admins:
+      {% for i in ['sysadmin'] %}
+      - {{i}}:
+          mail: "{{i}}+{name}@{fqdn}"
+          password: {{salt['mc_utils.generate_stored_password'](
+                             'corpus-django_web_admin'+i)}}
+      {%endfor %}
+    # http_users:
+    #   - root: foo
+    # extra django settings to add
+    # to the file
+    rest_api_user: 'restadmin'
+    rest_api_pass: '{{salt['mc_utils.generate_stored_password'](
+                           'corpus-django_web_secret_keyAPI', 64)}}'
+    hyperkitty_url: 'http://localhost:8000/'
+    hyperkitty_key: '{{salt['mc_utils.generate_stored_password'](
+                             'corpus-django_web_secret_keyARCHIVER', 64)}}'
+  env_defaults:
+    dev:
+      django_settings:
+        DEBUG: True
+# vim:set ft=sls:
