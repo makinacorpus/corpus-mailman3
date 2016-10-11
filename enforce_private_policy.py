@@ -13,7 +13,7 @@ from mailman.config import config
 def enforce(mailing):
     mailing.subscription_policy = (
         SubscriptionPolicy.confirm_then_moderate)
-    mailing.max_message_size = 20 * 1024 * 1024 * 1024
+    mailing.max_message_size = 2147483647
     mailing.max_num_recipients = 1000
     mailing.default_nonmember_action = Action.discard
     mailing.reply_goes_to_list = ReplyToMunging.point_to_list
