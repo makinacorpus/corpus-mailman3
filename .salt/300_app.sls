@@ -81,3 +81,37 @@ postupdate-{{cfg.name}}:
             if ! systemctl show {{data.service_name}};then exit 0;fi
             service {{data.service_name}} start
 
+hotfix-{{cfg.name}}:
+  file.managed:
+    - name: "{{cfg.data_root}}/hotfix.sh"
+    - contents: |
+            #!/usr/bin/env bash
+            export PATH=$PATH:/usr/sbin
+            export lists_domain="${lists_domain:-{{data.lists_domain}}}"
+            export api_user="${api_user:-{{data.rest_api_user}}}"
+            export api_pass="${api_pass:-{{data.rest_api_pass}}}"
+            export non_enforced_lists="${non_enforced_lists:-{{data.get('non_enforced_lists', '')}}}"
+            set -e
+            cd {{data.app_root}}
+            . venv/bin/activate
+            lists=$(mailman lists -q)
+            # for list in $lists;do
+            #   PYTHONPATH="$PWD:$PYTHONPATH" mailman \
+            #       withlist -r hotfix.fix $list
+            # done
+            python hotfix.py
+    - use_vt: true
+    - user: {{cfg.user}}
+    - group: {{cfg.group}}
+    - mode: 750
+    - watch:
+      - mc_proxy: {{cfg.name}}-configs-post
+  cmd.run:
+    - name: "{{cfg.data_root}}/hotfix.sh"
+    - use_vt: true
+    - user: {{cfg.user}}
+    - watch:
+      - file: hotfix-{{cfg.name}}
+      - cmd: postupdate-{{cfg.name}}
+    - watch_in:
+      - cmd: {{cfg.name}}-start-all
