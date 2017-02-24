@@ -5,10 +5,12 @@ from __future__ import division
 from __future__ import print_function
 from mailman.interfaces.mailinglist import SubscriptionPolicy
 from mailman.interfaces.action import Action
+from mailman.model.mailinglist import ListArchiver
 from mailman.interfaces.mailinglist import ReplyToMunging
 from mailman.interfaces.archiver import ArchivePolicy
 
-from mailman.config import config  
+from mailman.config import config
+from sqlalchemy.orm import sessionmaker
 
 def enforce(mailing):
     mailing.subscription_policy = (
@@ -19,6 +21,22 @@ def enforce(mailing):
     mailing.reply_goes_to_list = ReplyToMunging.point_to_list
     mailing.first_strip_reply_to = True
     mailing.archive_policy = ArchivePolicy.private
+    session = config.db.store
+    to_delete = {}
+    for i in session.query(ListArchiver).all():
+        name = i.mailing_list.list_name
+        mlist = to_delete.setdefault(name, {})
+        archiver = mlist.setdefault(i.name, [])
+        if i not in archiver:
+            archiver.append(i)
+    for mailinglist in [a for a in to_delete]:
+        archivers = to_delete[mailinglist]
+        for archivername in [a for a in archivers]:
+            archiver = archivers[archivername]
+            if len(archiver) > 1:
+                print("fixing {0} archivers".format(mailinglist))
+                for i in archiver[1:]:
+                    session.delete(i)
     config.db.commit()
 
 
