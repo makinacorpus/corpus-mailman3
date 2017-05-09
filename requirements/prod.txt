@@ -1,5 +1,5 @@
 psycopg2
 ipython
--e git+https://gitlab.com/mailman/mailmanclient.git@649da3faa742fad9f4802df4d12daa78517db30f#egg=mailmanclient
--e git+https://gitlab.com/mailman/mailman.git@28ee840bbb4ef616fa2655452534a1f1ba687b00#egg=mailman
+-e git+https://gitlab.com/mailman/mailmanclient.git@15195ac6d66abe53c0d00bc2932e1e1d7dc4a12e#egg=mailmanclient
+-e git+https://gitlab.com/mailman/mailman.git@b2edcaccbcf5778014b16139feb1a8eb6f31183e#egg=mailman
 -e git+https://gitlab.com/mailman/mailman-hyperkitty.git@cb2df4dade95c210496a5e1c52b9401914a03c4a#egg=mailman-hyperkitty
