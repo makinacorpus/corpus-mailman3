@@ -53,7 +53,7 @@ postupdate-{{cfg.name}}:
             fi
             for list in $lists;do
               PYTHONPATH="$PWD:$PYTHONPATH" mailman \
-                  withlist -r enforce_private_policy.enforce $list
+                  withlist -r enforce_private_policy.enforce -l $list
             done
             {% endif %}
     - use_vt: true
