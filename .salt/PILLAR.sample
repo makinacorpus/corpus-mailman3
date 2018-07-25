@@ -84,7 +84,7 @@ makina-projects.projectname:
         mode: 640
     htaccess: "/etc/{name}.webaccess"
     doc_root: "{data_root}/www"
-    orig_py: /usr/bin/python3.4
+    orig_py: /usr/bin/python3.5
     py: "{py_root}/bin/python"
     py_root: "{project_root}/venv"
     domain: "{fqdn}"

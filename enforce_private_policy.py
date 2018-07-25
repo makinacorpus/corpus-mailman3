@@ -5,14 +5,14 @@ from __future__ import division
 from __future__ import print_function
 from mailman.interfaces.mailinglist import SubscriptionPolicy
 from mailman.interfaces.action import Action
-from mailman.model.mailinglist import ListArchiver
+from mailman.model.mailinglist import ListArchiver, MailingList
 from mailman.interfaces.mailinglist import ReplyToMunging
 from mailman.interfaces.archiver import ArchivePolicy
 
 from mailman.config import config
 from sqlalchemy.orm import sessionmaker
 
-def enforce(mailing):
+def enforce(mailing, *args, **kw):
     mailing.subscription_policy = (
         SubscriptionPolicy.confirm_then_moderate)
     mailing.max_message_size = 2147483647

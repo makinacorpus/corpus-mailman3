@@ -97,7 +97,7 @@ hotfix-{{cfg.name}}:
             lists=$(mailman lists -q)
             # for list in $lists;do
             #   PYTHONPATH="$PWD:$PYTHONPATH" mailman \
-            #       withlist -r hotfix.fix $list
+            #       withlist -r hotfix.fix -l $list
             # done
             python hotfix.py
     - use_vt: true
