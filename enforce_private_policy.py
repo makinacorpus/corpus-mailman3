@@ -13,11 +13,18 @@ from mailman.config import config
 from sqlalchemy.orm import sessionmaker
 
 def enforce(mailing, *args, **kw):
+    """
+    - big message size
+    - increase max recipients
+    - set replyto
+    - make archives private
+    - sanify archivers
+    """
     mailing.subscription_policy = (
         SubscriptionPolicy.confirm_then_moderate)
     mailing.max_message_size = 2147483647
     mailing.max_num_recipients = 1000
-    mailing.default_nonmember_action = Action.discard
+    # mailing.default_nonmember_action = Action.discard
     mailing.reply_goes_to_list = ReplyToMunging.point_to_list
     mailing.first_strip_reply_to = True
     mailing.archive_policy = ArchivePolicy.private
