@@ -2,6 +2,6 @@ psycopg2-binary
 ipython
 # 3.2 branch
 -e git+https://gitlab.com/mailman/mailmanclient.git@3.2.0#egg=mailmanclient
--e git+https://gitlab.com/mailman/mailman.git@3.2.0#egg=mailman
+-e git+https://gitlab.com/kiorky/mailman.git@e88dc37225d1eef92d9831f80e3cfcfe9564163f#egg=mailman
 -e git+https://gitlab.com/mailman/mailman-hyperkitty.git@c625bfd212902e70d2b8e3c9d9de0013f2ff177e#egg=mailman-hyperkitty
 # vim:set et sts=4 ts=4 tw=0:
