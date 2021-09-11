@@ -27,7 +27,8 @@ def enforce(mailing, *args, **kw):
     # mailing.default_nonmember_action = Action.discard
     mailing.reply_goes_to_list = ReplyToMunging.point_to_list
     mailing.first_strip_reply_to = True
-    mailing.archive_policy = ArchivePolicy.private
+    if mailing.archive_policy in [None, ArchivePolicy.public]:
+        mailing.archive_policy = ArchivePolicy.private
     session = config.db.store
     to_delete = {}
     for i in session.query(ListArchiver).all():
